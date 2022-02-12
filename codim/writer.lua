@@ -20,12 +20,18 @@ function M:open(out)
         '-i', '-', -- use pipe for input
         '-an', -- no audio
         out, -- the output file
+        '2>/dev/null',
     }, ' '), 'w')
+    assert(self.process)
 end
 
 function M:close()
-    self.process:close()
+    assert(self.process:close())
+    self.frame:free()
 end
+
+function M:fill(...) self.frame:fill(...) end
+function M:play(tbl) self.frame:play(self.process, self.fps, tbl) end
 
 function M:wait(seconds)
     self.frame:write(self.process, math.floor(seconds * self.fps))

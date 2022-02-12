@@ -77,16 +77,21 @@ cairo_t *cairo_create(cairo_surface_t *target);
 void cairo_destroy(cairo_t *cr);
 
 void cairo_set_source_rgb(cairo_t *cr, double red, double green, double blue);
+void cairo_set_source_rgba(cairo_t *cr, double red, double green, double blue, double alpha);
 void cairo_set_line_width(cairo_t *cr, double width);
 void cairo_select_font_face(cairo_t *cr, const char *family, cairo_font_slant_t slant, cairo_font_weight_t weight);
 void cairo_set_font_size(cairo_t *cr, double size);
 void cairo_move_to(cairo_t *cr, double x, double y);
 void cairo_show_text(cairo_t *cr, const char *utf8);
 
-unsigned char *cairo_image_surface_get_data(cairo_surface_t *surface);
-cairo_status_t cairo_surface_write_to_png(cairo_surface_t *surface, const char *filename);
-
 void cairo_rectangle(cairo_t *cr, double x, double y, double width, double height);
+void cairo_stroke_preserve(cairo_t *cr);
+void cairo_surface_flush(cairo_surface_t *surface);
+void cairo_fill(cairo_t *cr);
+
+unsigned char *cairo_image_surface_get_data(cairo_surface_t *surface);
+int cairo_image_surface_get_stride(cairo_surface_t *surface);
+cairo_status_t cairo_surface_write_to_png(cairo_surface_t *surface, const char *filename);
 ]]
 
 -- Load the `cairo` library.
@@ -101,5 +106,5 @@ local _cairo_lib = ffi.load('cairo')
 return setmetatable({}, {
     __index = function(_, k)
         return _cairo_lib[(string.match(k:sub(1,1), '%u') and 'CAIRO_' or 'cairo_') .. k]
-    end
+    end,
 })
