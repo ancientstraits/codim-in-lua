@@ -19,24 +19,6 @@ function M:free()
     cairo.destroy(self.cairo)
 end
 
-function M:fill(color)
-    self.bgcolor = color
-    cairo.set_source_rgba(self.cairo, unpack(color))
-    cairo.rectangle(self.cairo, 0, 0, self.w, self.h)
-    cairo.fill(self.cairo)
-end
-
-function M:play(f, fps, tbl)
-    while #tbl ~= 0 do
-        for i = 1,#tbl do
-            if not tbl[i](self.cairo, fps) then
-                table.remove(tbl, i)
-            end
-        end
-        self:write(f, 1)
-    end
-end
-
 function M:write(f, times)
     cairo.surface_flush(self.csurf)
     local data = cairo.image_surface_get_data(self.csurf)

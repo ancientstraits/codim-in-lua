@@ -90,6 +90,8 @@ void cairo_surface_flush(cairo_surface_t *surface);
 void cairo_fill(cairo_t *cr);
 
 unsigned char *cairo_image_surface_get_data(cairo_surface_t *surface);
+int cairo_image_surface_get_height(cairo_surface_t *surface);
+int cairo_image_surface_get_width(cairo_surface_t *surface);
 int cairo_image_surface_get_stride(cairo_surface_t *surface);
 cairo_status_t cairo_surface_write_to_png(cairo_surface_t *surface, const char *filename);
 ]]

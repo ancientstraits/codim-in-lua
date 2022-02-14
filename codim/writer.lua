@@ -6,6 +6,9 @@ function M.new(w, h, fps)
     return setmetatable({
         frame = VideoFrame.new(w, h),
         fps = fps,
+        time = 0,
+        rel_time = 0,
+        animations = {},
     }, {__index = M})
 end
 
@@ -30,11 +33,42 @@ function M:close()
     self.frame:free()
 end
 
-function M:fill(...) self.frame:fill(...) end
-function M:play(tbl) self.frame:play(self.process, self.fps, tbl) end
+function M:write()
+    self.frame:write(self.process, 1)
+    self.time = self.time + 1
+    self.rel_time = self.rel_time + 1
+end
 
-function M:wait(seconds)
-    self.frame:write(self.process, math.floor(seconds * self.fps))
+function M:time_reset()
+    self.rel_time = 0
+end
+
+function M:add(tbl, ts)
+    if not ts then ts = 0 end
+    self.animations[self.time + ts] = tbl
+end
+
+function M:play()
+    local cur_anims = self.animations[0]
+    local i = 0
+    while #cur_anims > 0 do
+        print(i)
+        if self.animations[i] then
+            print(#self.animations[i])
+            for _, animation in ipairs(self.animations[i]) do
+                -- print'add'
+                -- cur_anims[#cur_anims+1] = animation
+            end
+        end
+        for j = 1,#cur_anims do
+            print'loop'
+            if not cur_anims[j](self.frame.cairo, self.frame.csurf, 1 / self.fps) then
+                table.remove(cur_anims, j)
+            end
+            self:write()
+        end
+        i = i + 1
+    end
 end
 
 return M
