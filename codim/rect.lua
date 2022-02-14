@@ -15,10 +15,10 @@ end
 
 function M:wait(seconds)
     local time = 0
-    return function(cr, surface, dt)
-        local width  = cairo.image_surface_get_width(surface)
-        local height = cairo.image_surface_get_width(surface)
-        cairo_utils.rect(cr, 0, 0, width, height, self.color)
+    return function(cr, _, dt)
+        -- if time == 0 then
+        cairo_utils.rect(cr, self.x, self.y, self.w, self.h, self.color)
+        -- end
         time = time + dt
         return time < seconds
     end

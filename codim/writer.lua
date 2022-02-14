@@ -45,14 +45,21 @@ end
 
 function M:add(tbl, ts)
     if not ts then ts = 0 end
-    self.animations[self.time + ts] = tbl
+    local time = self.time + ts
+    if self.animations[time] then
+        for _, v in ipairs(tbl) do
+            table.insert(self.animations[time], v)
+        end
+    else
+        self.animations[time] = tbl
+    end
 end
 
 function M:play()
     local cur_anims = self.animations[0]
+    print(cur_anims[0], cur_anims[1])
     local i = 0
     while #cur_anims > 0 do
-        print(i)
         if self.animations[i] then
             print(#self.animations[i])
             for _, animation in ipairs(self.animations[i]) do
@@ -61,12 +68,12 @@ function M:play()
             end
         end
         for j = 1,#cur_anims do
-            print'loop'
+            if not cur_anims[j] then break end
             if not cur_anims[j](self.frame.cairo, self.frame.csurf, 1 / self.fps) then
                 table.remove(cur_anims, j)
             end
-            self:write()
         end
+        self:write()
         i = i + 1
     end
 end
