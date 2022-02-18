@@ -33,8 +33,8 @@ function M:move(x, y, seconds)
     local ydiff = (y - self.y) / seconds
     local time = 0
     return function(cr, _, dt)
-        self.x = self.x + xdiff
-        self.y = self.y + ydiff
+        self.x = self.x + (xdiff * dt)
+        self.y = self.y + (ydiff * dt)
         cairo_utils.rect(cr,
             self.x, self.y,
             self.w, self.h,

@@ -1,20 +1,29 @@
 #!/usr/bin/env luajit
 
-local Writer = require('codim.writer')
-local Rect = require('codim.rect')
-local color = require('codim.color')
-local cairo_utils = require('codim.cairo_utils')
+if #arg < 1 then
+    print(string.format('usage: %s [LUA_SCRIPT]', arg[0]))
+    os.exit(1)
+end
 
-local w = Writer.new(600, 400, 24)
-w:open('out.mp4')
+local function load_codim(...)
+    local ret = {}
+    for _, v in ipairs({...}) do
+        ret[v] = require('codim.' .. v)
+    end
+    package.preload['codim'] = function() return ret end
+end
 
-local bg = Rect.new(0, 0, 600, 400, color.hex('0000ff'))
-w:add({bg:wait(2)}, 0)
+load_codim(
+    'cairo_utils',
+    'cairo',
+    'color',
+    'rect',
+    'text',
+    'tts',
+    'util',
+    'videoframe',
+    'writer'
+)
 
-local r = Rect.new(20, 20, 50, 50, color.hex('00ff00'))
-w:add({r:move(100, 100, 2)}, 0)
--- w:add({r:wait(2)}, 0)
-
-w:play()
-
-w:close()
+local filename = arg[1]
+dofile(filename)

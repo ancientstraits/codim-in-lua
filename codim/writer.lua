@@ -9,10 +9,12 @@ function M.new(w, h, fps)
         time = 0,
         rel_time = 0,
         animations = {},
+        out = '',
     }, {__index = M})
 end
 
 function M:open(out)
+    self.out = out
     self.process = io.popen(table.concat({
         'ffmpeg',
         '-y', -- overwrite
@@ -45,7 +47,7 @@ end
 
 function M:add(tbl, ts)
     if not ts then ts = 0 end
-    local time = self.time + ts
+    local time = (self.time + ts) * self.fps
     if self.animations[time] then
         for _, v in ipairs(tbl) do
             table.insert(self.animations[time], v)
@@ -57,21 +59,21 @@ end
 
 function M:play()
     local cur_anims = self.animations[0]
-    print(cur_anims[0], cur_anims[1])
     local i = 0
     while #cur_anims > 0 do
-        if self.animations[i] then
-            print(#self.animations[i])
+        if self.animations[i] and i ~= 0 then
             for _, animation in ipairs(self.animations[i]) do
-                -- print'add'
-                -- cur_anims[#cur_anims+1] = animation
+                cur_anims[#cur_anims+1] = animation
             end
         end
         for j = 1,#cur_anims do
-            if not cur_anims[j] then break end
-            if not cur_anims[j](self.frame.cairo, self.frame.csurf, 1 / self.fps) then
-                table.remove(cur_anims, j)
+            if not cur_anims[j] then goto continue end
+            local x = cur_anims[j](self.frame.cairo, self.frame.csurf, 1 / self.fps)
+            if not x then
+                -- table.remove(cur_anims, j)
+                cur_anims[j] = nil
             end
+            ::continue::
         end
         self:write()
         i = i + 1

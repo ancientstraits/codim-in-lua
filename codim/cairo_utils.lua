@@ -15,4 +15,12 @@ function M.rect(cr, x, y, width, height, color)
     cairo.fill(cr)
 end
 
+function M.generate_glyphs(cr)
+    
+end
+
+function M.draw_text(cr, glyphs, text, color, x, y, size, font, slant, weight)
+
+end
+
 return M
